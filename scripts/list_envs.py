@@ -20,7 +20,7 @@ import gymnasium as gym
 from prettytable import PrettyTable
 
 # Import extensions to set up environment tasks
-import ext_template.tasks  # noqa: F401
+import omni.isaac.coverage_control.tasks  # noqa: F401
 
 
 def main():
@@ -40,6 +40,12 @@ def main():
         if "Template-" in task_spec.id:
             # add details to table
             table.add_row([index + 1, task_spec.id, task_spec.entry_point, task_spec.kwargs["env_cfg_entry_point"]])
+            # increment count
+            index += 1
+            
+        if "Coverage-" in task_spec.id:
+            # add details to table
+            table.add_row([index + 1, task_spec.id, task_spec.entry_point, 0])
             # increment count
             index += 1
 

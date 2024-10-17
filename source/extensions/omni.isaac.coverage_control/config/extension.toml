@@ -7,12 +7,12 @@ version = "0.1.0"
 category = "isaaclab"
 readme  = "README.md"
 
-title = "Extension Template"
-author = "Isaac Lab Project Developers"
-maintainer = "Isaac Lab Project Developers"
-description="Extension Template for Isaac Lab"
-repository = "https://github.com/isaac-sim/IsaacLabExtensionTemplate.git"
-keywords = ["extension", "template", "isaaclab"]
+title = "Coverage Control"
+author = "Beiming Li"
+maintainer = "Beiming Li"
+description="Extension for Coverage Control"
+repository = "https://github.com/beimingli0626/CoverageIsaac.git"
+keywords = ["extension", "isaaclab"]
 
 [dependencies]
 "omni.isaac.lab" = {}
@@ -21,7 +21,7 @@ keywords = ["extension", "template", "isaaclab"]
 # NOTE: Add additional dependencies here
 
 [[python.module]]
-name = "ext_template"
+name = "omni.isaac.coverage_control"
 
 [isaaclab_settings]
 # TODO: Uncomment and list any apt dependencies here.
