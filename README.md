@@ -1,4 +1,4 @@
-# Template for Isaac Lab Projects
+# Coverage Control Extension for Isaac Sim
 
 [![IsaacSim](https://img.shields.io/badge/IsaacSim-4.2.0-silver.svg)](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html)
 [![Isaac Lab](https://img.shields.io/badge/IsaacLab-1.2.0-silver)](https://isaac-sim.github.io/IsaacLab)
@@ -10,14 +10,6 @@
 
 ## Overview
 
-This repository serves as a template for building projects or extensions based on Isaac Lab. It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
-
-**Key Features:**
-
-- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
-- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
-
-**Keywords:** extension, template, isaaclab
 
 ## Installation
 
@@ -26,32 +18,19 @@ This repository serves as a template for building projects or extensions based o
 - Clone the repository separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
 
 ```bash
-# Option 1: HTTPS
-git clone https://github.com/isaac-sim/IsaacLabExtensionTemplate.git
-
-# Option 2: SSH
-git clone git@github.com:isaac-sim/IsaacLabExtensionTemplate.git
-```
-
-- Throughout the repository, the name `omni.isaac.coverage_control` only serves as an example and we provide a script to rename all the references to it automatically:
-
-```bash
-# Enter the repository
-cd IsaacLabExtensionTemplate
-# Rename all occurrences of omni.isaac.coverage_control (in files/directories) to your_fancy_extension_name
-python scripts/rename_template.py your_fancy_extension_name
+git clone git@github.com:beimingli0626/CoverageIsaac.git
 ```
 
 - Using a python interpreter that has Isaac Lab installed, install the library
 
 ```bash
-python -m pip install -e exts/omni.isaac.coverage_control
+python -m pip install -e source/extensions/omni.isaac.coverage_control
 ```
 
 - Verify that the extension is correctly installed by running the following command:
 
 ```bash
-python scripts/rsl_rl/train.py --task=Template-Isaac-Velocity-Rough-Anymal-D-v0
+python scripts/list_envs.py
 ```
 
 ### Set up IDE (Optional)
@@ -59,12 +38,16 @@ python scripts/rsl_rl/train.py --task=Template-Isaac-Velocity-Rough-Anymal-D-v0
 To setup the IDE, please follow these instructions:
 
 - Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu. When running this task, you will be prompted to add the absolute path to your Isaac Sim installation.
+- Alternatively, simply run
+```bash
+ python .vscode/tools/setup_vscode.py
+```
 
 If everything executes correctly, it should create a file .python.env in the `.vscode` directory. The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse. This helps in indexing all the python modules for intelligent suggestions while writing code.
 
 ### Setup as Omniverse Extension (Optional)
 
-We provide an example UI extension that will load upon enabling your extension defined in `exts/omni.isaac.coverage_control/omni.isaac.coverage_control/ui_extension_example.py`. For more information on UI extensions, enable and check out the source code of the `omni.isaac.ui_template` extension and refer to the introduction on [Isaac Sim Workflows 1.2.3. GUI](https://docs.omniverse.nvidia.com/isaacsim/latest/introductory_tutorials/tutorial_intro_workflows.html#gui).
+We provide an example UI extension that will load upon enabling your extension defined in `source/extension/omni.isaac.coverage_control/omni.isaac.coverage_control/ui_extension_example.py`. For more information on UI extensions, enable and check out the source code of the `omni.isaac.ui_template` extension and refer to the introduction on [Isaac Sim Workflows 1.2.3. GUI](https://docs.omniverse.nvidia.com/isaacsim/latest/introductory_tutorials/tutorial_intro_workflows.html#gui).
 
 To enable your extension, follow these steps:
 
@@ -103,7 +86,7 @@ In some VsCode versions, the indexing of part of the extensions is missing. In t
 ```json
 {
     "python.analysis.extraPaths": [
-        "<path-to-ext-repo>/exts/omni.isaac.coverage_control"
+        "<path-to-ext-repo>/source/extensions/omni.isaac.coverage_control"
     ]
 }
 ```

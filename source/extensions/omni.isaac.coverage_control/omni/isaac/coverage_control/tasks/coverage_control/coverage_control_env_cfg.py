@@ -1,25 +1,32 @@
 import omni.isaac.lab.sim as sim_utils
-from omni.isaac.lab.assets import RigidObjectCfg
+from omni.isaac.lab.assets import RigidObjectCfg, ArticulationCfg
 from omni.isaac.lab.envs import DirectMARLEnvCfg
 from omni.isaac.lab.scene import InteractiveSceneCfg
 from omni.isaac.lab.sim import SimulationCfg
 from omni.isaac.lab.terrains import TerrainImporterCfg
 from omni.isaac.lab.utils import configclass
 
-
 @configclass
 class CoverageControlEnvCfg(DirectMARLEnvCfg):
+    # extra env param
+    num_agents: int = 2
+    """Number of agents per environment, default to be 2
+    
+    Note: change it by command line arguments, e.g. env.num_agents=4 (Hydra configuration), but cannot dynamically update corresponding variables for now
+    """
+    
     # env
     decimation = 4
-    episode_length_s = 10
-    possible_agents = ["robot"]
-    action_spaces = {"robot": 1}
-    observation_spaces = {"robot": 1}
-    state_space = 0
+    # episode_length_s = 10
+    possible_agents = [f"robot_{i+1}" for i in range(num_agents)]
+    num_actions = {f"robot_{i+1}": 1 for i in range(num_agents)}
+    num_observations = {f"robot_{i+1}": 1 for i in range(num_agents)}
+    num_states = -1
+    # state_space = 0
     
-    # simulation
+    # simulation NOTE: dt set to be 1, assume network output velocity command in 1Hz 
     sim: SimulationCfg = SimulationCfg(
-        dt= 0.005,
+        dt= 1,
         render_interval=decimation,
         disable_contact_processing=True,
         physics_material=sim_utils.RigidBodyMaterialCfg(
@@ -28,19 +35,21 @@ class CoverageControlEnvCfg(DirectMARLEnvCfg):
         ),
     )
     
-    # robot
     # TODO: use a cube for now, change to articulation later
-    robot: RigidObjectCfg = RigidObjectCfg(
-        prim_path="/World/envs/env_.*/robot",
-        spawn=sim_utils.CuboidCfg(
-            size=(0.2, 0.2, 0.2),
-            rigid_props=sim_utils.RigidBodyPropertiesCfg(),
-            mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
-            physics_material=sim_utils.RigidBodyMaterialCfg(),
-            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.5, 0.0, 0.0)),
-        ),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.0, 0.0, 5)),
-    )
+    # multiple robots
+    robots = {
+        f"robot_{i+1}": RigidObjectCfg(
+            prim_path=f"/World/envs/env_.*/robot_{i+1}",
+            spawn=sim_utils.CuboidCfg(
+                size=(0.2, 0.2, 0.2),
+                rigid_props=sim_utils.RigidBodyPropertiesCfg(disable_gravity=True),
+                mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
+                collision_props=sim_utils.CollisionPropertiesCfg(),
+                visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.5, 0.0, 0.0)),
+            ),
+            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.0, 0.0, i+1))
+        ) for i in range(num_agents)
+    }
     
     # terrain
     terrain = TerrainImporterCfg(

@@ -4,6 +4,7 @@ Coverage Control environment.
 
 import gymnasium as gym
 
+from . import agents
 from .coverage_control_env import CoverageControlEnv
 from .coverage_control_env_cfg import CoverageControlEnvCfg
 
@@ -17,6 +18,6 @@ gym.register(
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": CoverageControlEnvCfg,
-    #     "skrl_mappo_cfg_entry_point": f"{agents.__name__}:skrl_mappo_cfg.yaml",
+        "skrl_mappo_cfg_entry_point": f"{agents.__name__}:skrl_mappo_cfg.yaml",
     },
 )
