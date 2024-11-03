@@ -108,8 +108,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     obs, _ = env.reset()
     # simulate environment
     while simulation_app.is_running():
-        actions = {"robot_1": (torch.rand((1)) - 0.5) / 10}
-        obs, _, _, _, _ = env.step(actions)
+        actions = {"robot_1": (torch.rand((1)) - 0.5) / 10, "robot_2": (torch.rand((1)) - 0.5) / 10}
+        obs, rewards, terminated, truncated, _ = env.step(actions)
 
     # close the simulator
     env.close()

@@ -12,17 +12,16 @@ class CoverageControlEnvCfg(DirectMARLEnvCfg):
     num_agents: int = 2
     """Number of agents per environment, default to be 2
     
-    Note: change it by command line arguments, e.g. env.num_agents=4 (Hydra configuration), but cannot dynamically update corresponding variables for now
+    Note: cannot dynamically change it for now, because the environment is registered in __init__.py before take in CLI arg
     """
     
     # env
     decimation = 4
-    # episode_length_s = 10
+    episode_length_s = 10
     possible_agents = [f"robot_{i+1}" for i in range(num_agents)]
-    num_actions = {f"robot_{i+1}": 1 for i in range(num_agents)}
-    num_observations = {f"robot_{i+1}": 1 for i in range(num_agents)}
-    num_states = -1
-    # state_space = 0
+    action_spaces = {f"robot_{i+1}": 1 for i in range(num_agents)}
+    observation_spaces = {f"robot_{i+1}": 1 for i in range(num_agents)}
+    state_space = 0
     
     # simulation NOTE: dt set to be 1, assume network output velocity command in 1Hz 
     sim: SimulationCfg = SimulationCfg(

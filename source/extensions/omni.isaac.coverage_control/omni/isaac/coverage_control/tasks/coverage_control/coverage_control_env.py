@@ -18,12 +18,9 @@ class CoverageControlEnv(DirectMARLEnv):
         super().__init__(cfg, render_mode, **kwargs)
         print("[INFO]: Number of agents per environments:", cfg.num_agents)
         
-        self.vel_command = torch.zeros(self.num_envs, 6, dtype=torch.float, device=self.device)
+        self.vel_commands = {f"robot_{i+1}": torch.zeros(self.num_envs, 6, dtype=torch.float, device=self.device) for i in range(self.num_agents)}
         
     def _setup_scene(self):
-        """
-        NOTE: self.cfg is initialized when gym.register (in __init__.py), it happens before take in command line argument. Therefore cannot create #n robot configs dynamically based on cli_arg
-        """
         # TODO: modify robot cfg from rigid object to articulation; init_state initialization
         # create robots
         self.robots : dict[str, RigidObject] = {}
@@ -46,19 +43,32 @@ class CoverageControlEnv(DirectMARLEnv):
         light_cfg.func("/World/Light", light_cfg)
         
     def _pre_physics_step(self, actions: dict[str, torch.Tensor]) -> None:
-        # TODO
-        self.actions = actions
+        """ Preprocess actions output by network if needed
+        
+        E.g.: clamp, scale, velocity to thrust+moment
+        """
+        self.actions = actions  # current assumption is that network outputs velocity
 
     def _apply_action(self) -> None:
-        # TODO: directly modify root pose of robot, which is a simplification
-        # test directly modify robot pose
+        """ Currently directly modify root velocity
+        
+        NOTE: maybe try directly modify root pose, more similar to LPAC
+        """
         for robot_name, robot in self.robots.items():
-            if robot_name == "robot_1":
-                self.vel_command[:, 0] = self.actions[robot_name]
-                robot.write_root_velocity_to_sim(self.vel_command)
+            self.vel_commands[robot_name][:, 0] = self.actions[robot_name]
+            robot.write_root_velocity_to_sim(self.vel_commands[robot_name])
         
     def _get_observations(self) -> dict[str, torch.Tensor]:
+        """ Local observation for each agent
+        
+        Returns:
+            dict[agent_name, local_obs]
+                local_obs:
+                - local neighbour pose within communication/perception range
+                - local observed IDF
+                        
         # TODO
+        """
         observations = {
            "robot_1" : torch.cat(
                (
@@ -70,7 +80,14 @@ class CoverageControlEnv(DirectMARLEnv):
         return observations
     
     def _get_states(self) -> torch.Tensor:
+        """ Shared/global state for centralized value function
+
+        Returns:
+            - all agent poses
+            - global IDF
+
         # TODO
+        """
         states = torch.cat(
             (
                 torch.zeros(size=[1]),
@@ -80,6 +97,8 @@ class CoverageControlEnv(DirectMARLEnv):
         return states
     
     def _get_rewards(self) -> dict[str, torch.Tensor]:
+        """ Return global/per-agent reward
+        """
         # TODO
         return {"robot_1": torch.zeros(size=[1])}
     
